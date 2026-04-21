@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layla Hassan — UGC Creator Portfolio</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      --peach:         #FCA5A5;
+      --cyan:          #06b6d4;
+      --lime:          #84cc16;
+      --glass-bg:      rgba(255, 255, 255, 0.46);
+      --glass-border:  rgba(255, 255, 255, 0.72);
+      --shadow-base:   0 4px 20px rgba(15,23,42,0.07), 0 1px 6px rgba(15,23,42,0.04);
+      --shadow-hover:  0 18px 52px rgba(15,23,42,0.14), 0 6px 18px rgba(15,23,42,0.07);
+      --radius:        22px;
+      --gap:           16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #0f172a;
+    }
+
+    /* ══════════════════════════════════════════
+       ANIMATED GRADIENT BLOBS
+    ══════════════════════════════════════════ */
+    .blob-stage {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px);
+      opacity: 0.26;
+      will-change: transform;
+    }
+    .blob-peach {
+      width: 720px; height: 720px;
+      background: var(--peach);
+      top: -220px; left: -180px;
+      animation: blobFloat1 17s ease-in-out infinite;
+    }
+    .blob-cyan {
+      width: 580px; height: 580px;
+      background: var(--cyan);
+      top: 20%; right: -120px;
+      animation: blobFloat2 21s ease-in-out infinite;
+    }
+    .blob-lime {
+      width: 520px; height: 520px;
+      background: var(--lime);
+      bottom: -80px; left: 38%;
+      animation: blobFloat3 24s ease-in-out infinite;
+    }
+    @keyframes blobFloat1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(70px,-55px) scale(1.09); }
+      66%      { transform: translate(-40px,75px) scale(0.93); }
+    }
+    @keyframes blobFloat2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      40%      { transform: translate(-85px,45px) scale(1.07); }
+      75%      { transform: translate(55px,-75px) scale(0.95); }
+    }
+    @keyframes blobFloat3 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      30%      { transform: translate(65px,-85px) scale(1.11); }
+      65%      { transform: translate(-75px,35px) scale(0.91); }
+    }
+
+    /* Noise texture overlay for depth */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    /* ══════════════════════════════════════════
+       STICKY NAVIGATION
+    ══════════════════════════════════════════ */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px;
+      background: rgba(248,250,252,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.55);
+    }
+    .nav-brand {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #0f172a;
+      text-decoration: none;
+    }
+    .nav-brand span {
+      background: linear-gradient(125deg, var(--peach), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 15px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: 1.5px solid rgba(15,23,42,0.1);
+      background: rgba(255,255,255,0.75);
+      color: #475569;
+      transition: all 0.22s;
+      font-family: inherit;
+    }
+    .nav-pill:hover {
+      background: #0f172a;
+      color: white;
+      border-color: #0f172a;
+      transform: translateY(-1px);
+    }
+
+    /* ══════════════════════════════════════════
+       BENTO GRID
+    ══════════════════════════════════════════ */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: 162px 162px 210px 210px 190px 178px 178px;
+      gap: var(--gap);
+      padding: 24px 28px 40px;
+      max-width: 1480px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════════
+       CARD BASE + HOVER
+    ══════════════════════════════════════════ */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-base);
+      overflow: hidden;
+      position: relative;
+      transition:
+        transform  0.40s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.40s ease;
+      animation: cardReveal 0.55s ease both;
+    }
+    .card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: var(--shadow-hover);
+    }
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card:nth-child(1)  { animation-delay: 0.04s; }
+    .card:nth-child(2)  { animation-delay: 0.09s; }
+    .card:nth-child(3)  { animation-delay: 0.14s; }
+    .card:nth-child(4)  { animation-delay: 0.19s; }
+    .card:nth-child(5)  { animation-delay: 0.24s; }
+    .card:nth-child(6)  { animation-delay: 0.28s; }
+    .card:nth-child(7)  { animation-delay: 0.32s; }
+    .card:nth-child(8)  { animation-delay: 0.36s; }
+    .card:nth-child(9)  { animation-delay: 0.40s; }
+    .card:nth-child(10) { animation-delay: 0.44s; }
+    .card:nth-child(11) { animation-delay: 0.48s; }
+    .card:nth-child(12) { animation-delay: 0.52s; }
+    .card:nth-child(13) { animation-delay: 0.56s; }
+
+    /* ══════════════════════════════════════════
+       EXPLICIT GRID POSITIONS
+    ══════════════════════════════════════════ */
+    #card-hero         { grid-column: 1 / span 8;  grid-row: 1 / span 2; }
+    #card-status       { grid-column: 9 / span 4;  grid-row: 1; }
+    #card-language     { grid-column: 9 / span 4;  grid-row: 2; }
+    #card-portfolio-0  { grid-column: 1 / span 4;  grid-row: 3 / span 2; }
+    #card-portfolio-1  { grid-column: 5 / span 4;  grid-row: 3 / span 2; }
+    #card-portfolio-2  { grid-column: 9 / span 4;  grid-row: 3 / span 2; }
+    #card-stats-0      { grid-column: 1 / span 3;  grid-row: 5; }
+    #card-stats-1      { grid-column: 4 / span 3;  grid-row: 5; }
+    #card-whyme        { grid-column: 7 / span 6;  grid-row: 5; }
+    #card-services     { grid-column: 1 / span 4;  grid-row: 6 / span 2; }
+    #card-testimonial  { grid-column: 5 / span 4;  grid-row: 6; }
+    #card-cta          { grid-column: 9 / span 4;  grid-row: 6 / span 2; }
+    #card-social       { grid-column: 5 / span 4;  grid-row: 7; }
+
+    /* CTA: dark card overrides */
+    #card-cta {
+      background: linear-gradient(152deg, #0b1422 0%, #162035 55%, #080f1c 100%) !important;
+      border-color: rgba(255,255,255,0.07) !important;
+    }
+
+    /* ══════════════════════════════════════════
+       UTILITIES
+    ══════════════════════════════════════════ */
+    .label-xs {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2.2px;
+      color: #94a3b8;
+    }
+    .gradient-text {
+      background: linear-gradient(130deg, #0f172a 0%, #1e40af 40%, #0f172a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Availability badge */
+    .avail-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(132,204,22,0.13);
+      border: 1px solid rgba(132,204,22,0.30);
+      border-radius: 100px;
+      padding: 5px 13px;
+    }
+    .avail-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--lime);
+      flex-shrink: 0;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.55; transform: scale(0.85); }
+    }
+
+    /* Language buttons */
+    .lang-btn {
+      flex: 1;
+      padding: 9px 6px;
+      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      background: rgba(255,255,255,0.65);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.22s;
+      font-family: inherit;
+      letter-spacing: 0.4px;
+    }
+    .lang-btn:hover:not(.active) {
+      background: rgba(255,255,255,0.95);
+      border-color: var(--cyan);
+      color: #0e7490;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--cyan), #0e7490);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 4px 14px rgba(6,182,212,0.38);
+    }
+
+    /* Portfolio tag */
+    .tag-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+
+    /* Service item row */
+    .svc-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 11px;
+      border-radius: 11px;
+      background: rgba(255,255,255,0.58);
+      border: 1px solid rgba(255,255,255,0.85);
+      transition: background 0.18s, transform 0.18s;
+    }
+    .svc-item:hover {
+      background: rgba(255,255,255,0.9);
+      transform: translateX(3px);
+    }
+    [dir="rtl"] .svc-item:hover { transform: translateX(-3px); }
+    .check-circle {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--lime));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* CTA button */
+    .cta-btn {
+      display: block;
+      text-align: center;
+      padding: 13px 18px;
+      border-radius: 14px;
+      background: linear-gradient(125deg, var(--peach) 0%, var(--cyan) 55%, var(--lime) 100%);
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: transform 0.25s, box-shadow 0.25s;
+      font-family: inherit;
+    }
+    .cta-btn:hover {
+      transform: scale(1.04) translateY(-1px);
+      box-shadow: 0 12px 36px rgba(252,165,165,0.5);
+    }
+
+    /* Social link */
+    .social-link {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 13px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.85);
+      text-decoration: none;
+      transition: all 0.22s;
+    }
+    .social-link:hover {
+      background: rgba(255,255,255,0.92);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+    }
+
+    /* Icon box */
+    .icon-box {
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 12px;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     ANIMATED BLOB BACKGROUND
+══════════════════════════════════════════ -->
+<div class="blob-stage" aria-hidden="true">
+  <div class="blob blob-peach"></div>
+  <div class="blob blob-cyan"></div>
+  <div class="blob blob-lime"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     STICKY TOP NAV
+══════════════════════════════════════════ -->
+<nav class="top-nav" role="navigation">
+  <a href="#" class="nav-brand">Layla<span>Hassan</span>.ugc</a>
+  <div class="nav-actions">
+    <button class="nav-pill" onclick="toggleRTL()" title="Toggle text direction">⇄ RTL / LTR</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     BENTO GRID (JS renders cards here)
+══════════════════════════════════════════ -->
+<main class="bento-grid" id="bento-grid" role="main" aria-label="Creator Portfolio"></main>
+
+<!-- ══════════════════════════════════════════
+     CONFIG (must load before app script)
+══════════════════════════════════════════ -->
+<script src="config.js"></script>
+
+<!-- ══════════════════════════════════════════
+     MAIN APP SCRIPT
+══════════════════════════════════════════ -->
+<script>
+  /* ─────────────────────────────────────────
+     APP STATE
+  ───────────────────────────────────────── */
+  let currentLang = 'en';
+  let currentDir  = 'ltr';
+
+  /* ─────────────────────────────────────────
+     TRANSLATION HELPER
+     t(obj) → resolves multilingual config object to current language string
+  ───────────────────────────────────────── */
+  const t = (obj) =>
+    typeof obj === 'string' ? obj
+    : (obj?.[currentLang] ?? obj?.['en'] ?? '');
+
+  /* ─────────────────────────────────────────
+     LANGUAGE & DIRECTION SETTERS
+  ───────────────────────────────────────── */
+  function setLanguage(lang) {
+    currentLang = lang;
+    // Arabic automatically switches to RTL
+    setDir(lang === 'ar' ? 'rtl' : 'ltr');
+    renderAll();
+  }
+
+  function setDir(dir) {
+    currentDir = dir;
+    document.documentElement.dir  = dir;
+    document.documentElement.lang = currentLang;
+  }
+
+  // Toggles direction independently of language
+  function toggleRTL() {
+    setDir(currentDir === 'ltr' ? 'rtl' : 'ltr');
+    renderAll();
+  }
+
+  /* ─────────────────────────────────────────
+     SHARED SVG ASSETS
+  ───────────────────────────────────────── */
+  const SVG_CHECK = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+    <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
+  /* ═══════════════════════════════════════════
+     CARD BUILDERS — each returns an HTML string
+  ═══════════════════════════════════════════ */
+
+  /* ── HERO (8×2) ── */
+  function buildHero() {
+    const c = CONFIG.creator;
+    const avatar = c.profileImage
+      ? `<img src="${c.profileImage}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;" alt="${t(c.name)}" />`
+      : `<span style="font-size:26px;font-weight:900;color:white;letter-spacing:-1px;user-select:none;">${c.initials}</span>`;
+    return `
+      <div id="card-hero" class="card">
+        <!-- Ambient inner gradient -->
+        <div style="position:absolute;inset:0;background:linear-gradient(145deg,rgba(252,165,165,0.09) 0%,rgba(6,182,212,0.05) 60%,transparent 100%);pointer-events:none;z-index:0;border-radius:inherit;"></div>
+        <!-- Decorative orb BG -->
+        <div style="position:absolute;bottom:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:linear-gradient(135deg,rgba(252,165,165,0.13),rgba(6,182,212,0.09));filter:blur(10px);pointer-events:none;z-index:0;"></div>
+
+        <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:30px 36px;">
+
+          <!-- Top row: avatar + name block -->
+          <div style="display:flex;align-items:flex-start;gap:20px;">
+            <!-- Avatar -->
+            <div style="width:78px;height:78px;border-radius:20px;background:linear-gradient(135deg,var(--peach),var(--cyan));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 8px 28px rgba(6,182,212,0.32);">
+              ${avatar}
+            </div>
+            <!-- Name + title -->
+            <div>
+              <div class="label-xs" style="margin-bottom:7px;">UGC Creator Portfolio ✦</div>
+              <h1 style="font-size:clamp(28px,3vw,44px);font-weight:900;color:#0f172a;line-height:1.08;letter-spacing:-1.2px;" id="h-name">${t(c.name)}</h1>
+              <p style="font-size:14px;font-weight:600;color:#0891b2;margin-top:5px;letter-spacing:-0.2px;" id="h-title">${t(c.title)}</p>
+            </div>
+          </div>
+
+          <!-- Bottom: bio + badges -->
+          <div>
+            <p style="font-size:14.5px;line-height:1.78;color:#475569;max-width:520px;margin-bottom:18px;" id="h-bio">${t(c.bio)}</p>
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
+              <div class="avail-badge">
+                <span class="avail-dot"></span>
+                <span style="font-size:11.5px;font-weight:700;color:#3f6212;" id="h-avail">${t(c.availability)}</span>
+              </div>
+              <div style="font-size:12.5px;font-weight:500;color:#64748b;" id="h-loc">${t(c.location)}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ── STATUS (4×1) ── */
+  function buildStatus() {
+    const c = CONFIG.creator;
+    return `
+      <div id="card-status" class="card" style="padding:20px 22px;display:flex;flex-direction:column;gap:16px;justify-content:center;">
+        <div class="label-xs">Status</div>
+        <div style="display:flex;flex-direction:column;gap:11px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="icon-box" style="width:38px;height:38px;background:rgba(132,204,22,0.13);">✅</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#166534;" id="s-avail">${t(c.availability)}</div>
+              <div style="font-size:10.5px;color:#94a3b8;margin-top:1px;" id="s-resp">${t(c.responseTime)}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="icon-box" style="width:38px;height:38px;background:rgba(6,182,212,0.11);">📍</div>
+            <div style="font-size:13px;font-weight:600;color:#1e293b;" id="s-loc">${t(c.location)}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ── LANGUAGE SWITCHER (4×1) ── */
+  function buildLanguage() {
+    const langs = [
+      { code: 'en', flag: '🇬🇧', label: 'EN' },
+      { code: 'ar', flag: '🇦🇪', label: 'AR' },
+      { code: 'fr', flag: '🇫🇷', label: 'FR' },
+    ];
+    const note = {
+      en: 'AR switches to RTL automatically',
+      ar: 'العربية تفعّل RTL تلقائياً',
+      fr: "L'arabe active RTL automatiquement",
+    };
+    return `
+      <div id="card-language" class="card" style="padding:20px 22px;display:flex;flex-direction:column;justify-content:center;gap:12px;">
+        <div class="label-xs">Language</div>
+        <div style="display:flex;gap:7px;">
+          ${langs.map(l => `
+            <button class="lang-btn ${currentLang === l.code ? 'active' : ''}"
+                    onclick="setLanguage('${l.code}')"
+                    aria-label="Switch to ${l.label}"
+                    aria-pressed="${currentLang === l.code}">
+              ${l.flag} ${l.label}
+            </button>`).join('')}
+        </div>
+        <div style="font-size:10px;color:#94a3b8;font-style:italic;line-height:1.5;" id="lang-note">${note[currentLang]}</div>
+      </div>`;
+  }
+
+  /* ── PORTFOLIO CARD (4×2) — called for each item ── */
+  function buildPortfolio(item, idx) {
+    const tintBg = `${item.accent}16`;
+    return `
+      <div id="card-portfolio-${idx}" class="card" style="display:flex;flex-direction:column;">
+        <!-- Colored accent bar -->
+        <div style="height:3.5px;background:linear-gradient(90deg,${item.accent},${item.accentDark});flex-shrink:0;"></div>
+
+        <!-- Preview zone -->
+        <div style="background:${tintBg};padding:22px 22px 16px;flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.04);">
+          <div style="width:46px;height:46px;border-radius:14px;background:${item.accent}30;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:11px;">${item.icon}</div>
+          <div style="font-size:16.5px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;">${t(item.category)}</div>
+          <div style="font-size:11.5px;color:#64748b;line-height:1.65;margin-top:4px;">${t(item.description)}</div>
+        </div>
+
+        <!-- Bottom zone -->
+        <div style="padding:14px 22px 18px;flex:1;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;">
+          <!-- Tags -->
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
+            ${t(item.tags).map(tag => `
+              <span class="tag-pill" style="background:${item.accent}20;color:${item.accentDark};border:1px solid ${item.accent}40;">${tag}</span>
+            `).join('')}
+          </div>
+          <!-- Video count + play -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(0,0,0,0.05);">
+            <span style="font-size:18px;font-weight:900;color:#0f172a;letter-spacing:-0.5px;">${t(item.count)}</span>
+            <div style="width:30px;height:30px;border-radius:50%;background:${item.accent}28;display:flex;align-items:center;justify-content:center;color:${item.accentDark};font-size:11px;padding-left:2px;">▶</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ── STAT CARD (3×1) ── */
+  function buildStat(stat, idx) {
+    const tints = [
+      'linear-gradient(145deg,rgba(252,165,165,0.09),var(--glass-bg))',
+      'linear-gradient(145deg,rgba(6,182,212,0.09),var(--glass-bg))',
+    ];
+    return `
+      <div id="card-stats-${idx}" class="card" style="padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;background:${tints[idx]} !important;">
+        <div class="label-xs">${stat.icon} ${t(stat.label)}</div>
+        <div>
+          <div style="font-size:38px;font-weight:900;color:#0f172a;line-height:1;letter-spacing:-1.5px;">${stat.value}</div>
+          <div style="font-size:10.5px;color:#94a3b8;margin-top:5px;" id="stat-sub-${idx}">${t(stat.sub)}</div>
+        </div>
+      </div>`;
+  }
+
+  /* ── WHY ME (6×1) ── */
+  function buildWhyMe() {
+    const w = CONFIG.whyMe;
+    return `
+      <div id="card-whyme" class="card" style="padding:20px 26px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(140deg,rgba(6,182,212,0.09),rgba(255,255,255,0.42)) !important;">
+        <div class="label-xs" id="wm-label">${t(w.label)}</div>
+        <p style="font-size:13.5px;line-height:1.82;color:#475569;flex:1;margin:9px 0;" id="wm-text">${t(w.text)}</p>
+        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(6,182,212,0.11);border:1.5px solid rgba(6,182,212,0.26);border-radius:100px;padding:5px 13px;width:fit-content;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;"></span>
+          <span style="font-size:12px;font-weight:800;color:#0e7490;" id="wm-highlight">${t(w.highlight)}</span>
+        </div>
+      </div>`;
+  }
+
+  /* ── SERVICES (4×2) ── */
+  function buildServices() {
+    const s = CONFIG.services;
+    return `
+      <div id="card-services" class="card" style="padding:20px 20px;display:flex;flex-direction:column;gap:9px;">
+        <div class="label-xs" id="sv-label">${t(s.label)}</div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;">
+          ${s.items.map(item => `
+            <div class="svc-item">
+              <div class="check-circle">${SVG_CHECK}</div>
+              <span style="font-size:12.5px;font-weight:600;color:#1e293b;">${t(item.name)}</span>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  /* ── TESTIMONIAL (4×1) ── */
+  function buildTestimonial() {
+    const tm = CONFIG.testimonial;
+    return `
+      <div id="card-testimonial" class="card" style="padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(145deg,rgba(252,165,165,0.09),rgba(255,255,255,0.44)) !important;">
+        <div style="font-size:34px;line-height:1;color:var(--peach);font-family:Georgia,serif;margin-bottom:5px;">&ldquo;</div>
+        <p style="font-size:12px;line-height:1.82;color:#475569;font-style:italic;font-weight:500;flex:1;" id="tm-quote">${t(tm.quote)}</p>
+        <div style="display:flex;align-items:center;gap:9px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.05);">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--peach),#fbbf24);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:white;flex-shrink:0;">${tm.avatar}</div>
+          <span style="font-size:10.5px;font-weight:600;color:#64748b;" id="tm-author">${t(tm.author)}</span>
+        </div>
+      </div>`;
+  }
+
+  /* ── CTA (4×2) ── */
+  function buildCTA() {
+    const cta = CONFIG.cta;
+    return `
+      <div id="card-cta" class="card" style="padding:26px 24px;display:flex;flex-direction:column;justify-content:space-between;">
+        <!-- Background glow orbs -->
+        <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:linear-gradient(135deg,rgba(252,165,165,0.22),rgba(6,182,212,0.15));filter:blur(55px);pointer-events:none;z-index:0;"></div>
+        <div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:linear-gradient(135deg,rgba(132,204,22,0.18),rgba(6,182,212,0.12));filter:blur(45px);pointer-events:none;z-index:0;"></div>
+
+        <div style="position:relative;z-index:1;">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,0.32);margin-bottom:14px;">Ready to Collab?</div>
+          <h2 style="font-size:clamp(17px,1.7vw,22px);font-weight:900;color:white;line-height:1.25;letter-spacing:-0.5px;margin-bottom:10px;" id="cta-title">${t(cta.title)}</h2>
+          <p style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.72;" id="cta-sub">${t(cta.subtitle)}</p>
+        </div>
+
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;">
+          <a href="mailto:${cta.email}" class="cta-btn" id="cta-btn">${t(cta.buttonText)}</a>
+          <div style="text-align:center;font-size:9.5px;color:rgba(255,255,255,0.28);letter-spacing:0.3px;" id="cta-note">${t(cta.note)}</div>
+        </div>
+      </div>`;
+  }
+
+  /* ── SOCIAL LINKS (4×1) ── */
+  function buildSocial() {
+    const s = CONFIG.social;
+    return `
+      <div id="card-social" class="card" style="padding:18px 20px;display:flex;flex-direction:column;gap:11px;">
+        <div class="label-xs" id="sc-title">${t(s.title)}</div>
+        <div style="display:flex;gap:7px;">
+          ${s.links.map(l => `
+            <a href="${l.url}" class="social-link" aria-label="${l.platform}">
+              <span style="font-size:19px;flex-shrink:0;">${l.icon}</span>
+              <div>
+                <div style="font-size:11.5px;font-weight:700;color:#0f172a;">${l.platform}</div>
+                <div style="font-size:9.5px;color:#94a3b8;margin-top:1px;">${l.handle}</div>
+              </div>
+            </a>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  /* ═══════════════════════════════════════════
+     MASTER RENDER — rebuilds grid from CONFIG
+  ═══════════════════════════════════════════ */
+  function renderAll() {
+    const grid = document.getElementById('bento-grid');
+    grid.innerHTML =
+      buildHero()
+      + buildStatus()
+      + buildLanguage()
+      + CONFIG.portfolio.map((item, i) => buildPortfolio(item, i)).join('')
+      + CONFIG.stats.map((stat, i) => buildStat(stat, i)).join('')
+      + buildWhyMe()
+      + buildServices()
+      + buildTestimonial()
+      + buildCTA()
+      + buildSocial();
+  }
+
+  /* ─── INIT ─── */
+  renderAll();
+</script>
+
+</body>
+</html>
